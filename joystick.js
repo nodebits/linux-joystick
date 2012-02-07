@@ -1,16 +1,16 @@
 var FS = require('fs');
 var EventEmitter = require('events').EventEmitter;
 
-// http://www.mjmwired.net/kernel/Documentation/input/joystick-api.txt
 function parse(buffer) {
   var event = {
     time: buffer.readUInt32LE(0),
+    value: buffer.readInt16LE(4),
     number: buffer[7],
-    value: buffer.readInt16LE(4)
   }
-  if (buffer[6] & 0x80) event.init = true;
-  if (buffer[6] & 0x01) event.type = "button";
-  if (buffer[6] & 0x02) event.type = "axis";
+  var type = buffer[6];
+  if (type & 0x80) event.init = true;
+  if (type & 0x01) event.type = "button";
+  if (type & 0x02) event.type = "axis";
   return event;
 }
 
